@@ -22,12 +22,14 @@ public:
 
     bool AddCallback(const int16_t& id, const Callback& f);
     bool Send(const std::array<std::byte, 8>& payload, const int16_t& msgId, const int16_t& target=BMC_ADDR);
+    void StartThreads();
 private:
-    virtual void DefaultCallback(const std::shared_ptr<can_frame> frame)
+    virtual void DefaultCallback(const std::shared_ptr<can_frame> frame);
     void SendThread();
     void RecieveThread();
 
     CanSocket m_CanSocket;
+    std::string m_interface;
     std::atomic<bool> m_alive{true};
     std::thread m_ReceiveThread, m_SendThread;
     
