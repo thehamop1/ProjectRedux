@@ -1,5 +1,6 @@
 set(CAN_SRCS
-   Socket.cpp
+   CanSocket.cpp
+   CanCommunication.cpp
 )
 
 set(MAIN_SRCS
@@ -7,7 +8,6 @@ set(MAIN_SRCS
 )
 
 add_library(CAN ${CAN_SRCS})
-target_include_directories(CAN PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 add_executable(MAIN ${MAIN_SRCS})
 target_link_libraries(MAIN CAN)

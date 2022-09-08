@@ -5,24 +5,9 @@
 #include <signal.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
 #include <iostream>
-#include <sys/ioctl.h>
-#include <net/if.h>
 
 // https://docs.huihoo.com/doxygen/linux/kernel/3.7/can_8h_source.html
-
-class Canbus
-{
-public:
-    inline void TerminateThreads() { m_die = true; };
-
-private:
-    
-    std::atomic<bool> m_die{false};
-    std::thread m_ReceiveThread, m_SendThread;
-};
 
 ///////////////////////////////////////////////////////
 // TODO: FOR LOOP CAUSEING SEG FAULT??
@@ -170,58 +155,8 @@ void send_port(const fsae_electric_vehicle::can_message &msg)
     }
 }
 
-/* this is just an example, run in a thread */
-fsae_electric_vehicle::can_message read_port(fsae_electric_vehicle::can_message can_message)
-{
-    struct can_frame frame_rd;
-    int recvbytes = 0;
-    std::string can_data_string = "";
-    read_can_port = 1;
-    struct timeval timeout = {1, 0};
-    fd_set readSet;
-    FD_ZERO(&readSet);
-    FD_SET(soc, &readSet);
-
-    if (select((soc + 1), &readSet, NULL, NULL, &timeout) >= 0)
-    {
-        if (!read_can_port)
-        {
-            return can_message;
-        }
-        if (FD_ISSET(soc, &readSet))
-        {
-            recvbytes = read(soc, &frame_rd, sizeof(struct can_frame));
-            if (recvbytes)
-            {
-
-                char stuff[8];
-                sprintf(stuff, "%x", frame_rd.can_id);
-                std::string temp;
-                temp.append(stuff);
-                can_message.id = temp;
-                for (int x = 0; x < 8; x++)
-                {
-                    sprintf(stuff, "%x", frame_rd.data[x]);
-                    can_data_string.append(stuff);
-                }
-                can_message.data = can_data_string;
-            }
-        }
-    }
-    return can_message;
-}
-
-int close_port()
-{
-    close(soc);
-    return 0;
-}
-
 int main(int argc, char **argv)
 {
-    int soc;
-    int read_can_port;
-
     //   ros::init(argc, argv, "can_bus");
     //   ros::NodeHandle n;
     //   ros::Publisher CAN_BUS = n.advertise<fsae_electric_vehicle::can_message>("can_bus", 1000);
