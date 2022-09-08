@@ -19,7 +19,9 @@ void CanCommunication::StartThreads(){
 };
 
 CanCommunication::~CanCommunication(){
-    TerminateThreads();
+    StopThreads();
+    m_ReceiveThread.join();
+    m_SendThread.join();
     m_CanSocket.Close();
 };
 
