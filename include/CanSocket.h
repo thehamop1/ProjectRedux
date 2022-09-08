@@ -1,13 +1,12 @@
 #pragma once
+#include "CanDefs.h"
+
 #include <atomic>
 #include <mutex>
 #include <memory>
 #include <string_view>
 #include <linux/can.h>
 #include <linux/can/raw.h>
-
-constexpr std::string_view DEFAULT_CAN_CHANNEL{"can0"};
-constexpr int16_t BMC_ADDR=4100;
 
 class CanSocket
 {
