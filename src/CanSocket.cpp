@@ -64,11 +64,12 @@ bool CanSocket::Send(const std::shared_ptr<can_frame> frame) {
         return false;
     } 
 
+    char* dataLocation = reinterpret_cast<char*>(frame.get());
     int bytesToWrite = sizeof(can_frame);
     int ret=0;
     while(bytesToWrite>0){
-        ret = write(m_socket, frame.get(), bytesToWrite);
-        if(ret<0){
+        ret = write(m_socket, dataLocation + (sizeof(can_frame)-bytesToWrite), bytesToWrite);
+        if(ret<=0){
             m_connected=false;
             std::cerr << "ERROR: Socket send error socket invalid." << std::endl;
             return false;
@@ -84,12 +85,13 @@ bool CanSocket::Recieve(std::shared_ptr<can_frame> frame){
         std::cerr << "WARNING: Invalid pointer given." << std::endl;
         return false;
     } 
-    int bytesToRead = sizeof(frame);
-    int bytes=0;
 
+    char* dataLocation = reinterpret_cast<char*>(frame.get());
+    int bytesToRead = sizeof(can_frame);
+    int bytes=0;
     while(bytesToRead>0){
-        bytes = read(m_socket, frame.get(), bytesToRead);
-        if (bytes<0)
+        bytes = read(m_socket, dataLocation + (sizeof(can_frame)-bytesToRead), bytesToRead);
+        if (bytes<=0)
         {
             m_connected=false;
             std::cerr << "ERROR: Socket receive error socket invalid" << std::endl;

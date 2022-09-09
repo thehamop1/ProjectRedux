@@ -3,7 +3,6 @@
 #include "BMCCommunication.h"
 #include <iostream>
 
-int Menu();
 enum ACTIONS{
 ACC=1,
 STOP=2,
@@ -11,6 +10,8 @@ CLEAR=3,
 TOGGLE_DIGITAL=4,
 TOGGLE_ANALOG=5
 };
+
+int Menu();
 
 int main()
 {
