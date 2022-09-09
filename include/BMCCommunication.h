@@ -9,5 +9,6 @@ public:
     void ClearCodes();
     void EnableDigitalControl();
     void EnableAnalogControl();
+private:
     std::shared_ptr<can_frame> BaseMsg(const uint8_t topic);
 };

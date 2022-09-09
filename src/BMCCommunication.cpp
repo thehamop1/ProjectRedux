@@ -2,6 +2,8 @@
 #include <cstring>
 
 void BMCCommunication::SetSpeed(int16_t target){
+    target = target * (MAX_RPM / 100);
+
     auto frame = BaseMsg(SPEED_ID);
     uint8_t* data = frame->data;
     data[1] = target & 0xFF;

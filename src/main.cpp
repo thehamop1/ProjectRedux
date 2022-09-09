@@ -1,75 +1,66 @@
 /* A simple SocketCAN example */
 
-#include <thread>
-#include <atomic>
-#include <signal.h>
-#include <string.h>
-#include <stdlib.h>
+#include "BMCCommunication.h"
 #include <iostream>
 
-// https://docs.huihoo.com/doxygen/linux/kernel/3.7/can_8h_source.html
+int Menu();
+enum ACTIONS{
+ACC=1,
+STOP=2,
+CLEAR=3,
+TOGGLE_DIGITAL=4,
+TOGGLE_ANALOG=5
+};
 
-void send_port(const fsae_electric_vehicle::can_message &msg)
+int main()
 {
-    struct can_frame *frame;
-    int retval;
-    unsigned char data[8];
-    int16_t target = 4100;
-    float percentage = (float)msg.speed;
-    if (percentage == 0)
-    {
-        target = 0;
-    }
-    else
-    {
-        target = target * (percentage / 100);
-    }
-    std::cout << target << std::endl;
-    std::cout << msg.data << std::endl;
+    BMCCommunication motor;
 
-    if (msg.data == "accelerate")
-    {
-        set_speed(target, frame);
-    }
-    else if (msg.data == "stop")
-    {
-        stop_motor(frame);
-    }
-    else if (msg.data == "clear")
-    {
-        clear_codes(frame);
-    }
-    else if (msg.data == "toggle_digital")
-    {
-        toggle_control(true, frame);
-    }
-    else if (msg.data == "toggle_analog")
-    {
-        toggle_control(false, frame);
-    }
-}
+    motor.StartThreads();
 
-int main(int argc, char **argv)
-{
-    //   ros::init(argc, argv, "can_bus");
-    //   ros::NodeHandle n;
-    //   ros::Publisher CAN_BUS = n.advertise<fsae_electric_vehicle::can_message>("can_bus", 1000);
-    //   ros::Subscriber CAN_BUS_COMMANDS = n.subscribe("can_bus_commands", 1000, send_port);
-    //   ros::Rate loop_rate(1000);
-
-    if (!open_port("can0"))
+    while (true)
     {
-        std::cerr << "ERROR: Could not properly setup socket!" << std::endl;
-        std::exit(0);
-    };
-
-    while (!die)
-    {
-        can_message = read_port(can_message);
-        CAN_BUS.publish(can_message);
-        ros::spinOnce();
-        loop_rate.sleep();
+        switch(Menu()){
+            case ACC:
+            {
+                int speed=0;
+                system("clear");
+                std::cout << "How fast? " << std::endl;
+                std::cin >> speed;
+                motor.SetSpeed(speed);
+            }
+            break; 
+            case STOP:
+            motor.StopMotor();
+            break;
+            case CLEAR:
+            motor.ClearCodes();
+            break;
+            case TOGGLE_DIGITAL:
+            motor.EnableDigitalControl();
+            break;
+            case TOGGLE_ANALOG:
+            motor.EnableAnalogControl();
+            break;
+            default:
+            std::cerr << "WARNING: Unexpected action to motor!";
+            break;
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 
     return 0;
+}
+
+int Menu(){
+    int ret = 0;
+    system("clear");
+    std::cout << "==== Main Menu ====" << std::endl;
+    std::cout << "1. Set Speed " << std::endl;
+    std::cout << "2. Stop Motor" << std::endl;
+    std::cout << "3. Clear Codes" << std::endl;
+    std::cout << "4. Enable Digital Control" << std::endl;
+    std::cout << "5. Enable Analog Control" << std::endl;
+    std::cin >> ret;
+    return ret;
 }
