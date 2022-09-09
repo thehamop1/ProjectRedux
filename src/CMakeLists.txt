@@ -1,6 +1,7 @@
 set(CAN_SRCS
    CanSocket.cpp
    CanCommunication.cpp
+   BMCCommunication.cpp
 )
 
 set(MAIN_SRCS

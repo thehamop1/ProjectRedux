@@ -74,19 +74,14 @@ void CanCommunication::RecieveThread(){
     }
 };
 
-void DefaultCallback(const std::shared_ptr<can_frame> frame){
+void CanCommunication::DefaultCallback(const std::shared_ptr<can_frame> frame){
     std::cout << "WARNING: Unknown frame recieved!" << std::endl;
     std::cout << "ID: " << frame->can_id << std::endl;
 }
 
-bool CanCommunication::Send(const std::array<std::byte, 8>& payload, const int16_t& msgId, const int16_t& target){
-    auto msg = std::make_shared<can_frame>();
-    msg->can_id = msgId;
-    msg->can_dlc = 8;
-    std::memcpy(&(msg->data), payload.data(), payload.size()); 
-
+bool CanCommunication::Send(std::shared_ptr<can_frame> frame){
     std::scoped_lock<std::mutex> lock(m_queueLock);
-    m_queue.push(msg);
+    m_queue.push(frame);
     return true;
 };
 

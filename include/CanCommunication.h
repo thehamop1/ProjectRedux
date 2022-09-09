@@ -21,7 +21,7 @@ public:
     inline bool IsSetup() const {return m_CanSocket.IsConnected();}
 
     bool AddCallback(const int16_t& id, const Callback& f);
-    bool Send(const std::array<std::byte, 8>& payload, const int16_t& msgId, const int16_t& target=BMC_ADDR);
+    bool Send(std::shared_ptr<can_frame> frame);
     void StartThreads();
 private:
     virtual void DefaultCallback(const std::shared_ptr<can_frame> frame);
