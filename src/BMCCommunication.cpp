@@ -39,7 +39,7 @@ void BMCCommunication::EnableAnalogControl(){
     CanCommunication::Send(frame);
 };
 
-std::shared_ptr<can_frame> BaseMsg(const uint8_t topic) {
+std::shared_ptr<can_frame> BMCCommunication::BaseMsg(const uint8_t topic) {
     auto frame = std::make_shared<can_frame>();
     std::memset(frame.get(), 0, sizeof(can_frame));
     frame->can_id = BMC_ADDR;
