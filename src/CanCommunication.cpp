@@ -13,6 +13,7 @@ void CanCommunication::StartThreads(){
     m_ReceiveThread = std::thread([&](){
         RecieveThread();
     });
+
     m_SendThread = std::thread([&](){
         SendThread();
     });
@@ -33,10 +34,16 @@ void CanCommunication::SendThread(){
 
         auto msg = [&] -> std::shared_ptr<can_frame> {
             std::scoped_lock<std::mutex> lock(m_queueLock);
+            if(m_queue.empty()) return nullptr;
             auto msg = m_queue.front();
             m_queue.pop();
             return msg;
         }();
+
+        if(msg == nullptr){
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            continue;
+        }
 
         while(!successfullySent && m_alive){
             if(m_CanSocket.IsConnected()){
@@ -55,8 +62,13 @@ void CanCommunication::RecieveThread(){
     std::shared_ptr<can_frame> frame = std::make_shared<can_frame>();
 
     while(m_alive){
+        if(!m_CanSocket.IsConnected()){
+            m_CanSocket.Open(m_interface);
+            continue;
+        }
+
         std::memset(frame.get(), 0, sizeof(can_frame));
-        if(!m_CanSocket.IsConnected()){m_CanSocket.Open(m_interface);}
+
         if(m_CanSocket.Recieve(frame)){
             auto f = [&] -> Callback{
                 std::scoped_lock<std::mutex> lock(m_callbackLock);
