@@ -17,6 +17,7 @@ class CanCommunication
 public:
     CanCommunication(std::string_view interface=DEFAULT_CAN_CHANNEL);
     ~CanCommunication();
+
     inline void StopThreads() { m_alive = false; };
     inline bool IsSetup() const {return m_CanSocket.IsConnected();}
 
@@ -33,8 +34,9 @@ private:
     std::atomic<bool> m_alive{true};
     std::thread m_ReceiveThread, m_SendThread;
     
-    std::mutex m_queueLock, m_callbackLock;
+    std::mutex m_queueLock;
     std::queue<std::shared_ptr<can_frame>> m_queue; 
 
+    std::mutex m_callbackLock;
     std::unordered_map<int16_t, Callback> m_callbacks;
 };
