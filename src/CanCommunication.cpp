@@ -88,7 +88,7 @@ void CanCommunication::RecieveThread(){
 
 void CanCommunication::DefaultCallback(const std::shared_ptr<can_frame> frame){
     std::cout << "WARNING: Unknown frame recieved!" << std::endl;
-    std::cout << "ID: " << frame->can_id << std::endl;
+    std::cout << "ID: " << std::hex << frame->can_id << std::endl;
 }
 
 bool CanCommunication::Send(std::shared_ptr<can_frame> frame){

@@ -22,6 +22,11 @@ int main()
 
     motor.StartThreads();
 
+    motor.AddCallback(0x123, [](std::shared_ptr<can_frame> frame){
+        std::cout << "I GOT MY FRAME THAT I EXPECTED" << std::endl;
+        std::cout << "CAN ID: " << std::hex << frame->can_id << std::endl;
+    });
+
     while (alive)
     {
         switch(Menu()){
