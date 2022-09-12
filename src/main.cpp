@@ -14,18 +14,43 @@ QUIT=6
 
 int Menu();
 
+void Test(std::shared_ptr<can_frame> ptr){
+    std::cout << "This is my test" << std::endl;
+}
+
+class MyClass{
+    public:
+    void AnotherTest(std::shared_ptr<can_frame> frame){
+        std::cout << "Here's a test from a class" << std::endl;
+    };
+};
+
 int main()
 {
+
     bool alive=true;
 
     BMCCommunication motor;
 
     motor.StartThreads();
 
-    motor.AddCallback(0x123, [](std::shared_ptr<can_frame> frame){
-        std::cout << "I GOT MY FRAME THAT I EXPECTED" << std::endl;
-        std::cout << "CAN ID: " << std::hex << frame->can_id << std::endl;
-    });
+    //Example One: Class Function with lambda
+    // MyClass newClass;
+    // motor.AddCallback(0x123, [&](std::shared_ptr<can_frame> frame){newClass.AnotherTest(frame);});
+
+    //Example Two: Class Function with std::bind
+    // MyClass newClass;
+    // motor.AddCallback(0x123, std::bind(&MyClass::AnotherTest, newClass, std::placeholders::_1));
+
+
+    //Example Three: Function with std::Bind
+    // motor.AddCallback(0x123, std::bind(Test, std::placeholders::_1));
+
+    //Example Four: Lambda
+    // motor.AddCallback(0x123, [](std::shared_ptr<can_frame> frame){
+    //     std::cout << "I GOT MY FRAME THAT I EXPECTED" << std::endl;
+    //     std::cout << "CAN ID: " << std::hex << frame->can_id << std::endl;
+    // });
 
     while (alive)
     {
