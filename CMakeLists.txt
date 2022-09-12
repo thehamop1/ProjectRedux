@@ -10,8 +10,6 @@ SET(CMAKE_THREADS_PREFER_PTHREAD TRUE)
 SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 
-add_compile_options(-fsanitize=thread)
-add_link_options(-fsanitize=thread)
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -m64 -g3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -m64 -O3 -DNDEBUG")
 
