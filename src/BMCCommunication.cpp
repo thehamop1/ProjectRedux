@@ -42,6 +42,8 @@ void BMCCommunication::EnableAnalogControl(){
 std::shared_ptr<can_frame> BMCCommunication::BaseMsg(const uint8_t topic) {
     auto frame = std::make_shared<can_frame>();
     std::memset(frame.get(), 0, sizeof(can_frame));
+    uint8_t* data = frame->data;
+    data[0] = topic;
     frame->can_id = BMC_ADDR;
     frame->can_dlc = DEFAULT_DLC_SIZE;
     return frame;
