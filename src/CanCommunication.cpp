@@ -21,9 +21,9 @@ void CanCommunication::StartThreads(){
 
 CanCommunication::~CanCommunication(){
     StopThreads();
-    m_ReceiveThread.join();
     m_SendThread.join();
     m_CanSocket.Close();
+    m_ReceiveThread.detach();
 };
 
 void CanCommunication::SendThread(){

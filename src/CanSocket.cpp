@@ -15,6 +15,8 @@ bool CanSocket::Open(std::string_view interface)
 
     struct ifreq ifr;
     struct sockaddr_can addr;
+    std::memset(&ifr, 0, sizeof(ifr));
+    std::memset(&addr, 0, sizeof(addr));
 
     /* open socket */
     m_socket = socket(PF_CAN, SOCK_RAW, CAN_RAW);
@@ -24,22 +26,20 @@ bool CanSocket::Open(std::string_view interface)
         return false;
     }
 
-    addr.can_family = AF_CAN;
+    std::strcpy(ifr.ifr_name, interface.data());
+    ifr.ifr_ifindex = if_nametoindex(ifr.ifr_name);
 
-    std::memcpy(ifr.ifr_name, interface.data(), interface.size());
+    addr.can_family = AF_CAN;
+    addr.can_ifindex = ifr.ifr_ifindex;
 
     if (ioctl(m_socket, SIOCGIFINDEX, &ifr) < 0)
     {
         std::cerr << "ERROR: Could not return interface index!" << std::endl;
+        perror("ERROR: ");
         return false;
     }
 
     addr.can_ifindex = ifr.ifr_ifindex;
-
-    if (fcntl(m_socket, F_SETFL, O_NONBLOCK) < 0)
-    {
-        std::cerr << "WARNING: Could not set socket to Non-Blocking!" << std::endl;
-    }
 
     if (bind(m_socket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
@@ -67,9 +67,9 @@ bool CanSocket::Send(const std::shared_ptr<can_frame> frame) {
     char* dataLocation = reinterpret_cast<char*>(frame.get());
     int bytesToWrite = sizeof(can_frame);
     int ret=0;
-    while(bytesToWrite>0){
+    while(bytesToWrite>0 && m_connected){
         ret = write(m_socket, dataLocation + (sizeof(can_frame)-bytesToWrite), bytesToWrite);
-        if(ret<=0){
+        if(ret<0){
             m_connected=false;
             std::cerr << "ERROR: Socket send error socket invalid." << std::endl;
             return false;
@@ -89,11 +89,12 @@ bool CanSocket::Recieve(std::shared_ptr<can_frame> frame){
     char* dataLocation = reinterpret_cast<char*>(frame.get());
     int bytesToRead = sizeof(can_frame);
     int bytes=0;
-    while(bytesToRead>0){
-        bytes = read(m_socket, dataLocation + (sizeof(can_frame)-bytesToRead), bytesToRead);
-        if (bytes<=0)
+    while(bytesToRead>0 && m_connected){
+        bytes = recv(m_socket, dataLocation + (sizeof(can_frame)-bytesToRead), bytesToRead, MSG_WAITALL);
+        if (bytes<0)
         {
             m_connected=false;
+            perror("ERROR: ");
             std::cerr << "ERROR: Socket receive error socket invalid" << std::endl;
             return false;
         }

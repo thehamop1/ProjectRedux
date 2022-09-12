@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.16)
 project(PROJECT_REDUX LANGUAGES CXX)
 set (CMAKE_CXX_STANDARD 23)
 
@@ -6,6 +6,12 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/build/bin)
 
+SET(CMAKE_THREADS_PREFER_PTHREAD TRUE)
+SET(THREADS_PREFER_PTHREAD_FLAG TRUE)
+find_package(Threads REQUIRED)
+
+add_compile_options(-fsanitize=thread)
+add_link_options(-fsanitize=thread)
 set(CMAKE_CXX_FLAGS_DEBUG "-Wall -m64 -g3 -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-Wall -m64 -O3 -DNDEBUG")
 

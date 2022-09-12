@@ -2,7 +2,7 @@
 #include <string_view>
 #include <linux/can.h>
 
-constexpr std::string_view DEFAULT_CAN_CHANNEL{"can0"};
+constexpr std::string_view DEFAULT_CAN_CHANNEL{"vcan0"};
 constexpr uint8_t DEFAULT_DLC_SIZE = 8;
 
 constexpr canid_t BMC_ADDR=0x201;

@@ -18,7 +18,7 @@ public:
     CanCommunication(std::string_view interface=DEFAULT_CAN_CHANNEL);
     ~CanCommunication();
 
-    inline void StopThreads() { m_alive = false; };
+    void StopThreads() { m_alive = false; };
     inline bool IsSetup() const {return m_CanSocket.IsConnected();}
 
     bool AddCallback(const int16_t& id, const Callback& f);

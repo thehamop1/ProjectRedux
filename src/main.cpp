@@ -8,18 +8,21 @@ ACC=1,
 STOP=2,
 CLEAR=3,
 TOGGLE_DIGITAL=4,
-TOGGLE_ANALOG=5
+TOGGLE_ANALOG=5,
+QUIT=6
 };
 
 int Menu();
 
 int main()
 {
+    bool alive=true;
+
     BMCCommunication motor;
 
     motor.StartThreads();
 
-    while (true)
+    while (alive)
     {
         switch(Menu()){
             case ACC:
@@ -43,6 +46,9 @@ int main()
             case TOGGLE_ANALOG:
             motor.EnableAnalogControl();
             break;
+            case QUIT:
+            alive=false;
+            break;
             default:
             std::cerr << "WARNING: Unexpected action to motor!";
             break;
@@ -62,6 +68,7 @@ int Menu(){
     std::cout << "3. Clear Codes" << std::endl;
     std::cout << "4. Enable Digital Control" << std::endl;
     std::cout << "5. Enable Analog Control" << std::endl;
+    std::cout << "6. Quit" << std::endl;
     std::cin >> ret;
     return ret;
 }

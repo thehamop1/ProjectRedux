@@ -11,4 +11,4 @@ set(MAIN_SRCS
 add_library(CAN ${CAN_SRCS})
 
 add_executable(MAIN ${MAIN_SRCS})
-target_link_libraries(MAIN CAN)
+target_link_libraries(MAIN CAN Threads::Threads)
