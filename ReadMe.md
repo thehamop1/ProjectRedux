@@ -6,9 +6,13 @@
 - GCC 11.3
 - can-utils
 
+# How to setup vcan0 if it doesnt exist
+modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+
 # How to monitor can activity:
 candump vcan0
-
 
 # How to send packets:
 cansend vcan0 123#1122334455667788
